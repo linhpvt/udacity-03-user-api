@@ -1,11 +1,10 @@
 import express from 'express';
 import { sequelize } from './sequelize';
-
-import { UserRouter } from './controllers/v0/users/routes/user.router';
-
 import bodyParser from 'body-parser';
 
+import { UserRouter } from './controllers/v0/users/routes/user.router';
 import { V0MODELS } from './controllers/v0/model.index';
+import { config } from './config/config';
 
 (async () => {
   // set up relationship between models and tables
@@ -20,14 +19,13 @@ import { V0MODELS } from './controllers/v0/model.index';
 
   // CORS Should be restricted
   app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    // res.header("Access-Control-Allow-Origin", process.env.URL);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.header("Access-Control-Allow-Methods", "*");
+    res.header('Access-Control-Allow-Origin', config.dev.url);
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Methods', '*');
     next();
   });
-
-  app.use('/', UserRouter)
+  
+  app.use(UserRouter);
 
   // Start the Server
   app.listen( port, () => {

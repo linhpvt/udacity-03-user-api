@@ -1,7 +1,7 @@
-import { Response } from 'express'
+import { Response } from 'express';
 
 export const sendResponse = (res: Response, resp: any, statusCode: number = 200): void => {
-  res.status(statusCode).send(resp)
+  res.status(statusCode).send(resp);
 }
 
 export const getFieldsChanges = (updatingData: any, originData: any): any => {
@@ -11,7 +11,7 @@ export const getFieldsChanges = (updatingData: any, originData: any): any => {
       if (!prev) {
         prev = {};
       }
-      prev[key] = updatingData[key]
+      prev[key] = updatingData[key];
       return prev;
     }
     return prev;
@@ -19,9 +19,9 @@ export const getFieldsChanges = (updatingData: any, originData: any): any => {
 }
 
 export const setUpdateFields = (updatingData: any, model: any): any => {
-  const keys: string[] = Object.keys(updatingData)
+  const keys: string[] = Object.keys(updatingData);
   keys.forEach((key: string) => {
-    model[key] = updatingData[key]
+    model[key] = updatingData[key];
   })
   return model;
 }

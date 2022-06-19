@@ -3,8 +3,8 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { NextFunction } from 'connect';
 import * as EmailValidator from 'email-validator';
-import { User } from '../models/User';
 
+import { User } from '../models/User';
 import { config } from '../../../../config/config';
 import { sendResponse } from '../../../../helpers';
 
@@ -18,7 +18,7 @@ async function generatePassword(rawText: string): Promise<string> {
 }
 
 async function comparePasswords(rawText: string, hashedText: string): Promise<boolean> {
-  return bcrypt.compare(rawText, hashedText)
+  return bcrypt.compare(rawText, hashedText);
 }
 
 function generateJWT(user: User): string {
@@ -56,41 +56,41 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 router.get('/verification', 
 	requireAuth, 
 	async (_, res: Response) => {
-		sendResponse(res, { auth: true, message: 'Authenticated.' })
+		sendResponse(res, { auth: true, message: 'Authenticated.' });
 });
 
 router.post('/login', async (req: Request, res: Response) => {
-	const { body: { email, password } = {} } = req
+	const { body: { email, password } = {} } = req;
 	// check email is valid
 	if (!email || !EmailValidator.validate(email)) {
-		sendResponse(res, { auth: false, message: 'Email is required or malformed' }, 400)
-		return
+		sendResponse(res, { auth: false, message: 'Email is required or malformed' }, 400);
+		return;
 	}
 
 	// check email password valid
 	if (!password) {
-		sendResponse(res, { auth: false, message: 'Password is required' }, 400)
-		return
+		sendResponse(res, { auth: false, message: 'Password is required' }, 400);
+		return;
 	}
 
 	const user = await User.findByPk(email);
 	// check that user exists
 	if (!user) {
-		sendResponse(res, { auth: false, message: 'User not exist' }, 404)
-		return
+		sendResponse(res, { auth: false, message: 'User not exist' }, 404);
+		return;
 	}
 
 	// check that the password matches
-	const authValid = await comparePasswords(password, user.password_hash)
+	const authValid = await comparePasswords(password, user.password_hash);
 
 	if (!authValid) {
-		sendResponse(res, { auth: false, message: 'Unauthorized' }, 401)
-		return
+		sendResponse(res, { auth: false, message: 'Unauthorized' }, 401);
+		return;
 	}
 
 	// Generate JWT
 	const jwt = generateJWT(user);
-	sendResponse(res, { auth: true, token: jwt, user: user.short()}, 200)
+	sendResponse(res, { auth: true, token: jwt, user: user.short()}, 200);
 });
 
 //register a new user
@@ -99,22 +99,22 @@ router.post('/', async (req: Request, res: Response) => {
 	
 	// check email is valid
 	if (!email || !EmailValidator.validate(email)) {
-		sendResponse(res, { auth: false, message: 'Email is required or malformed' }, 400)
+		sendResponse(res, { auth: false, message: 'Email is required or malformed' }, 400);
 		return
 	}
 
 	// check email password valid
 	if (!rawText) {
-		sendResponse(res, { auth: false, message: 'Password is required' }, 400)
-		return
+		sendResponse(res, { auth: false, message: 'Password is required' }, 400);
+		return;
 	}
 
 	// find the user
-	const user = await User.findByPk(email)
+	const user = await User.findByPk(email);
 	// check that user doesnt exists
 	if (user) {
-		sendResponse(res, { auth: false, message: 'User may already exist' }, 422)
-		return
+		sendResponse(res, { auth: false, message: 'User may already exist' }, 422);
+		return;
 	}
 
 	const password_hash = await generatePassword(rawText);
@@ -125,22 +125,18 @@ router.post('/', async (req: Request, res: Response) => {
 
 	let savedUser;
 	try {
-		savedUser = await newUser.save()
+		savedUser = await newUser.save();
 	} catch (e) {
-		throw e
+		throw e;
 	}
 
 	// Generate JWT
-	const jwt = generateJWT(savedUser)
-	sendResponse(res, {token: jwt, user: savedUser.short()}, 201)
+	const jwt = generateJWT(savedUser);
+	sendResponse(res, {token: jwt, user: savedUser.short()}, 201);
 });
 
 router.get('/', async (_, res: Response) => {
-  res.send('auth')
-});
-
-router.get('/health/check/config/all', async (_, res: Response) => {    
-    res.send(config);
+  res.send('auth');
 });
 
 export const AuthRouter: Router = router;
