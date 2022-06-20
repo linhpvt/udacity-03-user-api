@@ -15,8 +15,13 @@ before_script:
 
 script:
   - docker --version # print the version for logging
+  # docker image named as udagram-api-user for the current project .
   - docker build -t udagram-api-user .
+  # tag the image called udagram-api-user to linhpvt/udagram-api-user:latest
   - docker tag udagram-api-user linhpvt/udagram-api-user:latest
 after_success:
+  # login to docker hub
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  # push tagged image to docker hub
   - docker push linhpvt/udagram-api-user
+  
